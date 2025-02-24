@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -11,15 +11,28 @@ import {
   Paper,
   Link
 } from '@mui/material';
+import useLinks from '../../hooks/useLinks';
 
 const Dashboard = () => {
-  const [links, setLinks] = useState([]);
+  const { links, loading, error } = useLinks();
 
-  useEffect(() => {
-    chrome.storage.local.get({ links: [] }, (result) => {
-      setLinks(result.links);
-    });
-  }, []);
+  if (loading) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography variant="h6">Loading links...</Typography>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography variant="h6" color="error">
+          Error: {error}
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
