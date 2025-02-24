@@ -7,6 +7,22 @@ const useLinks = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const deleteLink = async (url: string) => {
+    try {
+      const updatedLinks = links.filter(link => link.url !== url);
+      if (chrome.storage) {
+        // Chrome extension context
+        await chrome.storage.local.set({ links: updatedLinks });
+      } else {
+        // Development context
+        localStorage.setItem('links', JSON.stringify(updatedLinks));
+      }
+      setLinks(updatedLinks);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete link');
+    }
+  };
+
   useEffect(() => {
     const fetchLinks = async () => {
       try {
@@ -43,7 +59,7 @@ const useLinks = () => {
     fetchLinks();
   }, []);
 
-  return { links, loading, error };
+  return { links, loading, error, deleteLink };
 };
 
 export default useLinks;

@@ -7,15 +7,21 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  IconButton
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useLinks from '../hooks/useLinks';
 import { TLinkGroup } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { links, loading, error } = useLinks();
+  const { links, loading, error, deleteLink } = useLinks();
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | 'All'>('All');
+
+  const handleDelete = async (url: string) => {
+    await deleteLink(url);
+  };
 
   if (loading) {
     return (
@@ -35,8 +41,23 @@ const Dashboard: React.FC = () => {
     );
   }
 
-
   const columns: GridColDef[] = [
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <IconButton
+          onClick={() => handleDelete(params.row.url)}
+          color="error"
+          size="small"
+        >
+          <DeleteIcon />
+        </IconButton>
+      )
+    },
     {
       field: 'title',
       headerName: 'Title',
@@ -68,7 +89,7 @@ const Dashboard: React.FC = () => {
       valueFormatter: (value: number) => {
         return new Date(value).toLocaleString()
       }
-    }
+    },
   ];
 
   const filteredLinks = selectedGroup === 'All'
