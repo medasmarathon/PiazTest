@@ -11,9 +11,15 @@ import {
   Paper,
   Link
 } from '@mui/material';
-import useLinks from '../../hooks/useLinks';
+import useLinks from '../hooks/useLinks';
 
-const Dashboard = () => {
+interface Link {
+  url: string;
+  title: string;
+  timestamp: number;
+}
+
+const Dashboard: React.FC = () => {
   const { links, loading, error } = useLinks();
 
   if (loading) {
@@ -50,7 +56,7 @@ const Dashboard = () => {
           </TableHead>
           <TableBody>
             {links.length > 0 ? (
-              links.map((link, index) => (
+              links.map((link: Link, index: number) => (
                 <TableRow key={index}>
                   <TableCell>{link.title}</TableCell>
                   <TableCell>

@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import { Box, Button, Link } from '@mui/material';
 
-const Popup = () => {
-  const [isSaved, setIsSaved] = useState(false);
+interface Tab {
+  url?: string;
+  title?: string;
+}
+
+interface Link {
+  url: string;
+  title: string;
+  timestamp: string;
+}
+
+const Popup: React.FC = () => {
+  const [isSaved, setIsSaved] = useState<boolean>(false);
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const { url, title } = tab;
 
-    chrome.storage.local.get({ links: [] }, (result) => {
+    if (!url || !title) {
+      return;
+    }
+
+    chrome.storage.local.get({ links: [] }, (result: { links: Link[] }) => {
       const links = result.links;
       links.push({ url, title, timestamp: new Date().toISOString() });
       chrome.storage.local.set({ links }, () => {
