@@ -1,26 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
-  Link
+  Link as MuiLink,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import useLinks from '../hooks/useLinks';
-
-interface Link {
-  url: string;
-  title: string;
-  timestamp: number;
-}
+import { TLink, LinkGroup } from '../types';
 
 const Dashboard: React.FC = () => {
   const { links, loading, error } = useLinks();
+  const [selectedGroup, setSelectedGroup] = useState<LinkGroup | 'All'>('All');
 
   if (loading) {
     return (
@@ -40,49 +35,77 @@ const Dashboard: React.FC = () => {
     );
   }
 
+
+  const columns: GridColDef[] = [
+    {
+      field: 'title',
+      headerName: 'Title',
+      width: 200
+    },
+    {
+      field: 'url',
+      headerName: 'URL',
+      width: 300,
+      renderCell: (params) => (
+        <MuiLink
+          href={params.value as string}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {params.value as string}
+        </MuiLink>
+      )
+    },
+    {
+      field: 'group',
+      headerName: 'Group',
+      width: 150
+    },
+    {
+      field: 'timestamp',
+      headerName: 'Date Saved',
+      width: 200,
+      valueFormatter: (params: { value: number }) => new Date(params.value).toLocaleString()
+    }
+  ];
+
+  const filteredLinks = selectedGroup === 'All'
+    ? links
+    : links.filter(link => link.group === selectedGroup);
+
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4, height: '80vh' }}>
       <Typography variant="h4" component="h1" align="center" gutterBottom>
         Saved Links
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>URL</TableCell>
-              <TableCell>Date Saved</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {links.length > 0 ? (
-              links.map((link: Link, index: number) => (
-                <TableRow key={index}>
-                  <TableCell>{link.title}</TableCell>
-                  <TableCell>
-                    <Link
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {link.url}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(link.timestamp).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3} align="center" sx={{ py: 3 }}>
-                  No links saved yet.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel>Filter by Group</InputLabel>
+        <Select
+          value={selectedGroup}
+          label="Filter by Group"
+          onChange={(e) => setSelectedGroup(e.target.value as LinkGroup | 'All')}
+        >
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="SaaS">SaaS</MenuItem>
+          <MenuItem value="AI">AI</MenuItem>
+          <MenuItem value="Crypto">Crypto</MenuItem>
+          <MenuItem value="E-commerce">E-commerce</MenuItem>
+        </Select>
+      </FormControl>
+      <Paper sx={{ height: '100%' }}>
+        <DataGrid
+          rows={filteredLinks}
+          columns={columns}
+          pageSizeOptions={[5, 10, 25]}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 10 },
+            },
+          }}
+          getRowId={(row) => row.url}
+          disableRowSelectionOnClick
+        />
+      </Paper>
     </Container>
   );
 };

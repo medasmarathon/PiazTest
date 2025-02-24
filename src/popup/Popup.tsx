@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Button, Link } from '@mui/material';
+import { Box, Button, Link as MuiLink, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TLink, LinkGroup } from '../types';
 
 interface Tab {
   url?: string;
   title?: string;
 }
 
-interface Link {
-  url: string;
-  title: string;
-  timestamp: string;
-}
-
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [selectedGroup, setSelectedGroup] = useState<LinkGroup>('SaaS');
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -23,9 +19,15 @@ const Popup: React.FC = () => {
       return;
     }
 
-    chrome.storage.local.get({ links: [] }, (result: { links: Link[] }) => {
+    chrome.storage.local.get({ links: [] }, (result: { links: TLink[] }) => {
       const links = result.links;
-      links.push({ url, title, timestamp: new Date().toISOString() });
+      links.push({
+        id: `${url}-${Date.now()}`,
+        url,
+        title,
+        timestamp: Date.now(),
+        group: selectedGroup
+      });
       chrome.storage.local.set({ links }, () => {
         setIsSaved(true);
         setTimeout(() => setIsSaved(false), 2000);
@@ -35,6 +37,19 @@ const Popup: React.FC = () => {
 
   return (
     <Box sx={{ width: 200, p: 2 }}>
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel>Group</InputLabel>
+        <Select
+          value={selectedGroup}
+          label="Group"
+          onChange={(e) => setSelectedGroup(e.target.value as LinkGroup)}
+        >
+          <MenuItem value="SaaS">SaaS</MenuItem>
+          <MenuItem value="AI">AI</MenuItem>
+          <MenuItem value="Crypto">Crypto</MenuItem>
+          <MenuItem value="E-commerce">E-commerce</MenuItem>
+        </Select>
+      </FormControl>
       <Button
         variant="contained"
         color="success"
@@ -44,7 +59,7 @@ const Popup: React.FC = () => {
       >
         {isSaved ? 'Saved!' : 'Save Current Page'}
       </Button>
-      <Link
+      <MuiLink
         href="/src/dashboard/index.html"
         target="_blank"
         sx={{
@@ -55,7 +70,7 @@ const Popup: React.FC = () => {
         }}
       >
         View Saved Links
-      </Link>
+      </MuiLink>
     </Box>
   );
 };

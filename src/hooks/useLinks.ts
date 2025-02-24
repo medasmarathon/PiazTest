@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
 
-interface Link {
-  url: string;
-  title: string;
-  timestamp: number;
-}
+import { TLink } from '../types';
 
 const useLinks = () => {
-  const [links, setLinks] = useState<Link[]>([]);
+  const [links, setLinks] = useState<TLink[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +12,12 @@ const useLinks = () => {
       try {
         if (chrome.storage) {
           // Chrome extension context
-          chrome.storage.local.get({ links: [] }, (result: { links: Link[] }) => {
+          chrome.storage.local.get({ links: [] }, (result: { links: TLink[] }) => {
+            // Add default group to existing links
+            const linksWithGroup = result.links.map(link => ({
+              ...link,
+              group: link.group || 'SaaS' // Default to SaaS for existing links
+            }));
             if (chrome.runtime.lastError) {
               throw new Error(chrome.runtime.lastError.message);
             }
