@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Link as MuiLink, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { TLink, TLinkGroup } from '../types';
+import useLinks from '@/hooks/useLinks';
 
 interface Tab {
   url?: string;
@@ -10,12 +11,19 @@ interface Tab {
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
+  const { links } = useLinks();
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const { url, title } = tab;
 
     if (!url || !title) {
+      return;
+    }
+
+    if (links.find(l => l.url === url)) {
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
       return;
     }
 

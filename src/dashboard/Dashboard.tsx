@@ -65,8 +65,8 @@ const Dashboard: React.FC = () => {
       field: 'timestamp',
       headerName: 'Date Saved',
       width: 200,
-      valueFormatter: (params: number) => {
-        return new Date(params).toLocaleString()
+      valueFormatter: (value: number) => {
+        return new Date(value).toLocaleString()
       }
     }
   ];
