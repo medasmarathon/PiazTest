@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Link as MuiLink, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { TLink, LinkGroup } from '../types';
+import { TLink, TLinkGroup } from '../types';
 
 interface Tab {
   url?: string;
@@ -9,7 +9,7 @@ interface Tab {
 
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
-  const [selectedGroup, setSelectedGroup] = useState<LinkGroup>('SaaS');
+  const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -42,7 +42,7 @@ const Popup: React.FC = () => {
         <Select
           value={selectedGroup}
           label="Group"
-          onChange={(e) => setSelectedGroup(e.target.value as LinkGroup)}
+          onChange={(e) => setSelectedGroup(e.target.value as TLinkGroup)}
         >
           <MenuItem value="SaaS">SaaS</MenuItem>
           <MenuItem value="AI">AI</MenuItem>

@@ -11,11 +11,11 @@ import {
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import useLinks from '../hooks/useLinks';
-import { TLink, LinkGroup } from '../types';
+import { TLinkGroup } from '../types';
 
 const Dashboard: React.FC = () => {
   const { links, loading, error } = useLinks();
-  const [selectedGroup, setSelectedGroup] = useState<LinkGroup | 'All'>('All');
+  const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | 'All'>('All');
 
   if (loading) {
     return (
@@ -65,7 +65,9 @@ const Dashboard: React.FC = () => {
       field: 'timestamp',
       headerName: 'Date Saved',
       width: 200,
-      valueFormatter: (params: { value: number }) => new Date(params.value).toLocaleString()
+      valueFormatter: (params: number) => {
+        return new Date(params).toLocaleString()
+      }
     }
   ];
 
@@ -83,7 +85,7 @@ const Dashboard: React.FC = () => {
         <Select
           value={selectedGroup}
           label="Filter by Group"
-          onChange={(e) => setSelectedGroup(e.target.value as LinkGroup | 'All')}
+          onChange={(e) => setSelectedGroup(e.target.value as TLinkGroup | 'All')}
         >
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="SaaS">SaaS</MenuItem>
