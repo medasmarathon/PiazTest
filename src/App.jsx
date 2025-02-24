@@ -1,25 +1,41 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from 'react';
+import { Box, Button, Typography } from '@mui/material';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+    <Box sx={{ textAlign: 'center', p: 4 }}>
+      <Typography variant="h3" component="h1" gutterBottom>
+        Vite + React
+      </Typography>
+      <Box
+        sx={{
+          p: 3,
+          borderRadius: 2,
+          boxShadow: 1,
+          maxWidth: 400,
+          mx: 'auto',
+          my: 2
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => setCount((count) => count + 1)}
+          sx={{ mb: 2 }}
+        >
           count is {count}
-        </button>
-        <p>
+        </Button>
+        <Typography variant="body1" paragraph>
           Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
+        </Typography>
+      </Box>
+      <Typography variant="body2" color="text.secondary">
         Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      </Typography>
+    </Box>
+  );
 }
 
-export default App
+export default App;

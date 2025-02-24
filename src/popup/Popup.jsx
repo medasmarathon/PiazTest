@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Box, Button, Link } from '@mui/material';
 
 const Popup = () => {
   const [isSaved, setIsSaved] = useState(false);
@@ -18,35 +19,29 @@ const Popup = () => {
   };
 
   return (
-    <div style={{ width: '200px', padding: '10px' }}>
-      <button
+    <Box sx={{ width: 200, p: 2 }}>
+      <Button
+        variant="contained"
+        color="success"
+        fullWidth
         onClick={handleSave}
-        style={{
-          width: '100%',
-          padding: '8px',
-          marginBottom: '10px',
-          backgroundColor: '#4CAF50',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
+        sx={{ mb: 2 }}
       >
         {isSaved ? 'Saved!' : 'Save Current Page'}
-      </button>
-      <a
+      </Button>
+      <Link
         href="/src/dashboard/index.html"
         target="_blank"
-        style={{
+        sx={{
           display: 'block',
           textAlign: 'center',
-          color: '#2196F3',
+          color: 'primary.main',
           textDecoration: 'none'
         }}
       >
         View Saved Links
-      </a>
-    </div>
+      </Link>
+    </Box>
   );
 };
 
