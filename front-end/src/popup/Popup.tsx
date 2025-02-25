@@ -12,6 +12,7 @@ const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
   const [description, setDescription] = useState<string>('');
+  const [rating, setRating] = useState<number | undefined>(undefined);
   const { linksQuery, saveLink } = useLinks();
 
   const handleSave = async () => {
@@ -28,7 +29,8 @@ const Popup: React.FC = () => {
       title,
       description: description.trim(),
       created_at: Date.now(),
-      group: selectedGroup
+      group: selectedGroup,
+      rating
     };
 
     const success = await saveLink.mutateAsync(newLink);
@@ -51,6 +53,20 @@ const Popup: React.FC = () => {
           <MenuItem value="AI">AI</MenuItem>
           <MenuItem value="Crypto">Crypto</MenuItem>
           <MenuItem value="E-commerce">E-commerce</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel>Rating</InputLabel>
+        <Select
+          value={rating ?? ''}
+          label="Rating"
+          onChange={(e) => setRating(e.target.value ? Number(e.target.value) : undefined)}
+        >
+          <MenuItem value={1}>1 - Poor</MenuItem>
+          <MenuItem value={2}>2 - Fair</MenuItem>
+          <MenuItem value={3}>3 - Good</MenuItem>
+          <MenuItem value={4}>4 - Very Good</MenuItem>
+          <MenuItem value={5}>5 - Excellent</MenuItem>
         </Select>
       </FormControl>
       <TextField

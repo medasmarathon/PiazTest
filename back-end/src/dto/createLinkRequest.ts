@@ -7,6 +7,7 @@ export const CreateLinkRequest = z.object({
   description: z.string().optional(),
   group: z.enum(['SaaS', 'AI', 'Crypto', 'E-commerce']),
   created_at: z.number(),
+  rating: z.number().min(1).max(5).optional(),
 });
 
 // Export the inferred TypeScript type

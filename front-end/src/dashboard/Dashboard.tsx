@@ -115,6 +115,14 @@ const Dashboard: React.FC = () => {
       width: 150,
     },
     {
+      field: "rating",
+      headerName: "Rating",
+      width: 100,
+      renderCell: (params) => (
+        params.value ? '★'.repeat(params.value) : 'No rating'
+      ),
+    },
+    {
       field: "created_at",
       headerName: "Date Saved",
       width: 150,

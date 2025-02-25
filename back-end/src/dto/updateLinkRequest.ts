@@ -6,6 +6,7 @@ export const UpdateLinkRequest = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   group: z.enum(['SaaS', 'AI', 'Crypto', 'E-commerce']).optional(),
+  rating: z.number().min(1).max(5).optional(),
 });
 
 // Export the inferred TypeScript type

@@ -7,4 +7,5 @@ export interface TLink {
   description?: string;
   created_at: number;
   group: TLinkGroup;
+  rating?: number;
 }
