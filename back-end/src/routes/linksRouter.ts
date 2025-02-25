@@ -92,12 +92,12 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a link
-router.delete('/:id', async (req, res) => {
+router.delete('/:url', async (req, res) => {
   try {
     const { error } = await supabase
       .from('links')
       .delete()
-      .eq('id', req.params.id);
+      .eq('url', decodeURIComponent(req.params.url));
 
     if (error) throw error;
     res.status(204).send();

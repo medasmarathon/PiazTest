@@ -22,7 +22,7 @@ app.get('/health', (req, res) => {
 });
 
 // Use links router
-app.use('/links', linksRouter);
+app.use('/api/links', linksRouter);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
