@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Link as MuiLink, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Button, Link as MuiLink, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 import { TLink, TLinkGroup } from '../types';
 import useLinks from '@/hooks/useLinks';
 
@@ -11,6 +11,7 @@ interface Tab {
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
+  const [description, setDescription] = useState<string>('');
   const { links, saveLink } = useLinks();
 
   const handleSave = async () => {
@@ -21,15 +22,11 @@ const Popup: React.FC = () => {
       return;
     }
 
-    if (links.find(l => l.url === url)) {
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
-      return;
-    }
-
-    const newLink: Omit<TLink, "id"> = {
+    const newLink: Partial<TLink> = {
+      id: links.find(l => l.url === url)?.id ?? undefined,
       url,
       title,
+      description: description.trim(),
       created_at: Date.now(),
       group: selectedGroup
     };
@@ -56,6 +53,15 @@ const Popup: React.FC = () => {
           <MenuItem value="E-commerce">E-commerce</MenuItem>
         </Select>
       </FormControl>
+      <TextField
+        fullWidth
+        label="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        sx={{ mb: 2 }}
+        multiline
+        rows={2}
+      />
       <Button
         variant="contained"
         color="success"
