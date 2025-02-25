@@ -10,7 +10,13 @@ import {
   MenuItem,
   IconButton,
   Popover,
-  Tooltip
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,6 +26,26 @@ import { TLinkGroup } from '../types';
 const Dashboard: React.FC = () => {
   const { links, loading, error, deleteLink } = useLinks();
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | 'All'>('All');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
+
+  const handleDeleteClick = (url: string) => {
+    setUrlToDelete(url);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (urlToDelete) {
+      await deleteLink(urlToDelete);
+      setDeleteDialogOpen(false);
+      setUrlToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setUrlToDelete(null);
+  };
 
   const handleDelete = async (url: string) => {
     await deleteLink(url);
@@ -53,7 +79,7 @@ const Dashboard: React.FC = () => {
       renderCell: (params) => (
         <Tooltip title="Delete">
           <IconButton
-            onClick={() => handleDelete(params.row.url)}
+            onClick={() => handleDeleteClick(params.row.url)}
             color="error"
             size="small"
           >
@@ -106,7 +132,8 @@ const Dashboard: React.FC = () => {
     : links.filter(link => link.group === selectedGroup);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4, height: '80vh' }}>
+    <>
+      <Container maxWidth="lg" sx={{ py: 4, height: '80vh' }}>
       <Typography variant="h4" component="h1" align="center" gutterBottom>
         Saved Links
       </Typography>
@@ -139,6 +166,25 @@ const Dashboard: React.FC = () => {
         />
       </Paper>
     </Container>
+    <Dialog
+      open={deleteDialogOpen}
+      onClose={handleDeleteCancel}
+      aria-labelledby="delete-dialog-title"
+    >
+      <DialogTitle id="delete-dialog-title">Confirm Delete</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to delete this link?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDeleteCancel}>Cancel</Button>
+        <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+    </>
   );
 };
 
