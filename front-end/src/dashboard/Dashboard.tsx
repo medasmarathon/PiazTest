@@ -47,10 +47,6 @@ const Dashboard: React.FC = () => {
     setUrlToDelete(null);
   };
 
-  const handleDelete = async (url: string) => {
-    await deleteLink(url);
-  };
-
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
