@@ -21,22 +21,26 @@ const handleError = (error: unknown, res: any) => {
   }
 };
 
-interface Link {
-  id?: string;
-  url: string;
-  title: string;
-  description?: string;
-  created_at?: string;
-}
-
 // Create a new link
 router.post('/', async (req, res) => {
   try {
     const parsed = CreateLinkRequest.parse(req.body);
+    const { data: existedLink, error: existedLinkError } = await supabase
+      .from('links')
+      .select()
+      .eq("url", parsed.url);
+
+    if (existedLinkError) {
+      const err = new Error(`Failed to create link: ${existedLinkError.message}`);
+      (err as ApiError).statusCode = 400;
+      throw err;
+    }
+
     const { data, error } = await supabase
       .from('links')
       .upsert({
         ...parsed,
+        id: existedLink?.length > 0 ? existedLink[0].id : undefined,
         created_at: new Date(parsed.created_at).toUTCString()
       })
       .select()
