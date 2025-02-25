@@ -4,6 +4,6 @@ export interface TLink {
   id: string;
   url: string;
   title: string;
-  timestamp: number;
+  created_at: number;
   group: TLinkGroup;
 }

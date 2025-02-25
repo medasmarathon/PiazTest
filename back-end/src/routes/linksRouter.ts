@@ -16,7 +16,10 @@ router.post('/', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('links')
-      .insert(req.body)
+      .insert({
+        ...req.body,
+        created_at: new Date(req.body.created_at)
+      })
       .select()
       .single();
 

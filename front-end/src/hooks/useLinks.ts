@@ -7,7 +7,7 @@ const useLinks = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const saveLink = async (link: TLink) => {
+  const saveLink = async (link: Partial<TLink>) => {
     try {
       const savedLink = await saveLinkApi(link);
       setLinks(prevLinks => [...prevLinks, savedLink]);

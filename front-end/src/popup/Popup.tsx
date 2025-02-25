@@ -27,11 +27,10 @@ const Popup: React.FC = () => {
       return;
     }
 
-    const newLink = {
-      id: `${url}-${Date.now()}`,
+    const newLink: Omit<TLink, "id"> = {
       url,
       title,
-      timestamp: Date.now(),
+      created_at: Date.now(),
       group: selectedGroup
     };
 

@@ -4,6 +4,7 @@
   "version": "1.0",
   "description": "Save and manage your favorite links",
   "permissions": ["tabs", "storage"],
+  "host_permissions": ["http://localhost:3000/*"],
   "action": {
     "default_popup": "./src/popup/index.html",
     "default_icon": {

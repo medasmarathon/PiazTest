@@ -19,7 +19,7 @@ export const deleteLink = async (url: string): Promise<void> => {
   }
 };
 
-export const saveLink = async (link: TLink): Promise<TLink> => {
+export const saveLink = async (link: Partial<TLink>): Promise<TLink> => {
   const response = await fetch(API_BASE_URL, {
     method: 'POST',
     headers: {

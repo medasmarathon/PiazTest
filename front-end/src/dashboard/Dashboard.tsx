@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
       width: 150
     },
     {
-      field: 'timestamp',
+      field: 'created_at',
       headerName: 'Date Saved',
       width: 200,
       valueFormatter: (value: number) => {
