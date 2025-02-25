@@ -9,7 +9,6 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Popover,
   Tooltip,
   Dialog,
   DialogTitle,
@@ -166,7 +165,7 @@ const Dashboard: React.FC = () => {
               paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          getRowId={(row) => row.url}
+          getRowId={(row) => row.id}
           disableRowSelectionOnClick
         />
       </Paper>

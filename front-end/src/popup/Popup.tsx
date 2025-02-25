@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Link as MuiLink, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import { Box, Button, Link as MuiLink, FormControl, InputLabel, TextField, Rating, Typography, Select, MenuItem } from '@mui/material';
 import { TLink, TLinkGroup } from '../types';
 import useLinks from '@/hooks/useLinks';
 
@@ -55,20 +55,15 @@ const Popup: React.FC = () => {
           <MenuItem value="E-commerce">E-commerce</MenuItem>
         </Select>
       </FormControl>
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Rating</InputLabel>
-        <Select
-          value={rating ?? ''}
-          label="Rating"
-          onChange={(e) => setRating(e.target.value ? Number(e.target.value) : undefined)}
-        >
-          <MenuItem value={1}>1 - Poor</MenuItem>
-          <MenuItem value={2}>2 - Fair</MenuItem>
-          <MenuItem value={3}>3 - Good</MenuItem>
-          <MenuItem value={4}>4 - Very Good</MenuItem>
-          <MenuItem value={5}>5 - Excellent</MenuItem>
-        </Select>
-      </FormControl>
+      <Box sx={{ mb: 2 }}>
+        <Typography component="legend">Rating</Typography>
+        <Rating
+          name="link-rating"
+          value={rating ?? 0}
+          onChange={(event, newValue) => setRating(newValue ?? undefined)}
+          max={5}
+        />
+      </Box>
       <TextField
         fullWidth
         label="Description"
