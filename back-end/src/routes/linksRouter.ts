@@ -5,6 +5,22 @@ import { UpdateLinkRequest, UpdateLinkRequestType } from '../dto/updateLinkReque
 
 const router = Router();
 
+// Centralized error handling
+interface ApiError extends Error {
+  statusCode?: number;
+}
+
+const handleError = (error: unknown, res: any) => {
+  if (error instanceof Error) {
+    const apiError = error as ApiError;
+    res.status(apiError.statusCode || 500).json({
+      error: apiError.message || 'An unexpected error occurred'
+    });
+  } else {
+    res.status(500).json({ error: 'An unknown error occurred' });
+  }
+};
+
 interface Link {
   id?: string;
   url: string;
@@ -21,19 +37,19 @@ router.post('/', async (req, res) => {
       .from('links')
       .upsert({
         ...parsed,
-        created_at: new Date(parsed.created_at)
+        created_at: new Date(parsed.created_at).toUTCString()
       })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      const err = new Error(`Failed to create link: ${error.message}`);
+      (err as ApiError).statusCode = 400;
+      throw err;
+    }
     res.status(201).json(data);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'An unknown error occurred' });
-    }
+    handleError(error, res);
   }
 });
 
@@ -48,14 +64,14 @@ router.put('/:id', async (req, res) => {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      const err = new Error(`Failed to update link: ${error.message}`);
+      (err as ApiError).statusCode = 400;
+      throw err;
+    }
     res.status(200).json(data);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'An unknown error occurred' });
-    }
+    handleError(error, res);
   }
 });
 
@@ -67,14 +83,14 @@ router.get('/', async (req, res) => {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      const err = new Error(`Failed to fetch links: ${error.message}`);
+      (err as ApiError).statusCode = 500;
+      throw err;
+    }
     res.status(200).json(data);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'An unknown error occurred' });
-    }
+    handleError(error, res);
   }
 });
 
@@ -87,14 +103,14 @@ router.get('/:id', async (req, res) => {
       .eq('id', req.params.id)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      const err = new Error(`Failed to fetch link: ${error.message}`);
+      (err as ApiError).statusCode = 404;
+      throw err;
+    }
     res.status(200).json(data);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'An unknown error occurred' });
-    }
+    handleError(error, res);
   }
 });
 
@@ -127,10 +143,14 @@ router.delete('/:url', async (req, res) => {
       .delete()
       .eq('url', decodeURIComponent(req.params.url));
 
-    if (error) throw error;
+    if (error) {
+      const err = new Error(`Failed to delete link: ${error.message}`);
+      (err as ApiError).statusCode = 500;
+      throw err;
+    }
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: (error as any).message });
+    handleError(error, res);
   }
 });
 

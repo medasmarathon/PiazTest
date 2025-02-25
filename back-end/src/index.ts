@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import linksRouter from './routes/linksRouter';
+import { Database } from '../database.types';
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_KEY!;
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 app.use(cors());
 app.use(express.json());
