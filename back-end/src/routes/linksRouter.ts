@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { supabase } from '../index';
+import { CreateLinkRequest, CreateLinkRequestType } from '../dto/createLinkRequest';
+import { UpdateLinkRequest, UpdateLinkRequestType } from '../dto/updateLinkRequest';
 
 const router = Router();
 
@@ -14,11 +16,12 @@ interface Link {
 // Create a new link
 router.post('/', async (req, res) => {
   try {
+    const parsed = CreateLinkRequest.parse(req.body);
     const { data, error } = await supabase
       .from('links')
       .upsert({
-        ...req.body,
-        created_at: new Date(req.body.created_at)
+        ...parsed,
+        created_at: new Date(parsed.created_at)
       })
       .select()
       .single();
@@ -27,7 +30,29 @@ router.post('/', async (req, res) => {
     res.status(201).json(data);
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred' });
+    }
+  }
+});
+
+// Update a link
+router.put('/:id', async (req, res) => {
+  try {
+    const parsed = UpdateLinkRequest.parse(req.body);
+    const { data, error } = await supabase
+      .from('links')
+      .update(parsed)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
     } else {
       res.status(500).json({ error: 'An unknown error occurred' });
     }
