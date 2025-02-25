@@ -11,7 +11,7 @@ interface Tab {
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
-  const { links } = useLinks();
+  const { links, saveLink } = useLinks();
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -27,20 +27,19 @@ const Popup: React.FC = () => {
       return;
     }
 
-    chrome.storage.local.get({ links: [] }, (result: { links: TLink[] }) => {
-      const links = result.links;
-      links.push({
-        id: `${url}-${Date.now()}`,
-        url,
-        title,
-        timestamp: Date.now(),
-        group: selectedGroup
-      });
-      chrome.storage.local.set({ links }, () => {
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 2000);
-      });
-    });
+    const newLink = {
+      id: `${url}-${Date.now()}`,
+      url,
+      title,
+      timestamp: Date.now(),
+      group: selectedGroup
+    };
+
+    const success = await saveLink(newLink);
+    if (success) {
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
+    }
   };
 
   return (

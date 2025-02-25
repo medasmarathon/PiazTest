@@ -18,3 +18,17 @@ export const deleteLink = async (url: string): Promise<void> => {
     throw new Error('Failed to delete link');
   }
 };
+
+export const saveLink = async (link: TLink): Promise<TLink> => {
+  const response = await fetch(API_BASE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(link),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to save link');
+  }
+  return response.json();
+};
