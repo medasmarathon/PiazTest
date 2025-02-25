@@ -8,7 +8,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  IconButton
+  IconButton,
+  Popover,
+  Tooltip
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -43,29 +45,31 @@ const Dashboard: React.FC = () => {
 
   const columns: GridColDef[] = [
     {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 100,
+      field: "actions",
+      headerName: "Actions",
+      width: 80,
       sortable: false,
       filterable: false,
       renderCell: (params) => (
-        <IconButton
-          onClick={() => handleDelete(params.row.url)}
-          color="error"
-          size="small"
-        >
-          <DeleteIcon />
-        </IconButton>
-      )
+        <Tooltip title="Delete">
+          <IconButton
+            onClick={() => handleDelete(params.row.url)}
+            color="error"
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
-      field: 'title',
-      headerName: 'Title',
-      width: 200
+      field: "title",
+      headerName: "Title",
+      width: 200,
     },
     {
-      field: 'url',
-      headerName: 'URL',
+      field: "url",
+      headerName: "URL",
       width: 300,
       renderCell: (params) => (
         <MuiLink
@@ -75,20 +79,25 @@ const Dashboard: React.FC = () => {
         >
           {params.value as string}
         </MuiLink>
-      )
+      ),
     },
     {
-      field: 'group',
-      headerName: 'Group',
-      width: 150
+      field: "group",
+      headerName: "Group",
+      width: 100,
     },
     {
-      field: 'created_at',
-      headerName: 'Date Saved',
-      width: 200,
+      field: "description",
+      headerName: "Description",
+      width: 150,
+    },
+    {
+      field: "created_at",
+      headerName: "Date Saved",
+      width: 150,
       valueFormatter: (value: number) => {
-        return new Date(value).toLocaleString()
-      }
+        return new Date(value).toLocaleString();
+      },
     },
   ];
 
@@ -97,7 +106,7 @@ const Dashboard: React.FC = () => {
     : links.filter(link => link.group === selectedGroup);
 
   return (
-    <Container maxWidth="md" sx={{ py: 4, height: '80vh' }}>
+    <Container maxWidth="lg" sx={{ py: 4, height: '80vh' }}>
       <Typography variant="h4" component="h1" align="center" gutterBottom>
         Saved Links
       </Typography>
