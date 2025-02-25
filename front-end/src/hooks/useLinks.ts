@@ -1,55 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { TLink } from '../types';
 import { getLinks, deleteLink as deleteLinkApi, saveLink as saveLinkApi } from '../api/links';
 
 const useLinks = () => {
-  const [links, setLinks] = useState<TLink[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const linksQuery = useQuery<TLink[], Error>({
+    queryKey: ['links'],
+    queryFn: getLinks
+  });
 
-  const saveLink = async (link: Partial<TLink>) => {
-    try {
+  if (linksQuery.error) {
+    const err = linksQuery.error;
+    let errorMsg = err instanceof Error ? err.message : 'Failed to fetch links';
+    console.warn("get links error: ", errorMsg, err);
+  }
+
+  const saveLink = useMutation<TLink, Error, Partial<TLink>>({
+    mutationFn: async (link: Partial<TLink>) => {
       const savedLink = await saveLinkApi(link);
-      setLinks(prevLinks => [...prevLinks, savedLink]);
-      return true;
-    } catch (err: unknown) {
+      linksQuery.refetch();
+      return savedLink;
+    },
+    onError: (err: unknown) => {
       let errorMsg = err instanceof Error ? err.message : 'Failed to save link';
-      setError(errorMsg);
       console.warn("save link error: ", errorMsg, err);
-      return false;
     }
-  };
+  });
 
-  const deleteLink = async (url: string) => {
-    try {
+  const deleteLink = useMutation<boolean, Error, string>({
+    mutationFn: async (url: string) => {
       await deleteLinkApi(url);
-      const updatedLinks = links.filter(link => link.url !== url);
-      setLinks(updatedLinks);
-    } catch (err: unknown) {
-      let errorMsg = err instanceof Error ? err.message : 'Failed to save link';
-      setError(errorMsg);
+      linksQuery.refetch();
+      return true;
+    },
+    onError: (err: unknown) => {
+      let errorMsg = err instanceof Error ? err.message : 'Failed to delete link';
       console.warn("delete link error: ", errorMsg, err);
     }
-  };
+  });
 
-  useEffect(() => {
-    const fetchLinks = async () => {
-      try {
-        const fetchedLinks = await getLinks();
-        setLinks(fetchedLinks);
-        setLoading(false);
-      } catch (err: unknown) {
-        let errorMsg = err instanceof Error ? err.message : 'Failed to save link';
-        setError(errorMsg);
-        console.warn("get links error: ", errorMsg, err);
-        setLoading(false);
-      }
-    };
-
-    fetchLinks();
-  }, []);
-
-  return { links, loading, error, saveLink, deleteLink };
+  return { linksQuery, saveLink, deleteLink };
 };
 
 export default useLinks;

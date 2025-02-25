@@ -24,7 +24,8 @@ import useLinks from '../hooks/useLinks';
 import { TLinkGroup } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { links, loading, error, deleteLink } = useLinks();
+  const { linksQuery, deleteLink } = useLinks();
+  const { data: links, isLoading: loading, error } = linksQuery;
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | 'All'>('All');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
@@ -36,7 +37,7 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (urlToDelete) {
-      await deleteLink(urlToDelete);
+      await deleteLink.mutateAsync(urlToDelete);
       setDeleteDialogOpen(false);
       setUrlToDelete(null);
     }
@@ -55,11 +56,11 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (error || !links) {
     return (
       <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
         <Typography variant="h6" color="error">
-          Error: {error}
+          Error loading links
         </Typography>
       </Container>
     );

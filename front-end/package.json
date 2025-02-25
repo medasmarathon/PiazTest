@@ -15,15 +15,16 @@
     "@mui/icons-material": "^6.4.5",
     "@mui/material": "^6.4.5",
     "@mui/x-data-grid": "^7.27.0",
+    "@tanstack/react-query": "^5.66.9",
     "@types/chrome": "^0.0.306",
     "chrome-types": "^0.1.343",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.19.0",
     "eslint-plugin-react": "^7.37.4",

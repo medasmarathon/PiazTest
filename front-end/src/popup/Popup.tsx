@@ -12,7 +12,7 @@ const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
   const [description, setDescription] = useState<string>('');
-  const { links, saveLink } = useLinks();
+  const { linksQuery, saveLink } = useLinks();
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -23,7 +23,7 @@ const Popup: React.FC = () => {
     }
 
     const newLink: Partial<TLink> = {
-      id: links.find(l => l.url === url)?.id ?? undefined,
+      id: linksQuery.data?.find(l => l.url === url)?.id ?? undefined,
       url,
       title,
       description: description.trim(),
@@ -31,7 +31,7 @@ const Popup: React.FC = () => {
       group: selectedGroup
     };
 
-    const success = await saveLink(newLink);
+    const success = await saveLink.mutateAsync(newLink);
     if (success) {
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
