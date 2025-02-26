@@ -3,7 +3,7 @@
   "name": "Link Saver",
   "version": "1.0",
   "description": "Save and manage your favorite links",
-  "permissions": ["tabs", "storage"],
+  "permissions": ["tabs", "storage", "identity"],
   "host_permissions": ["http://localhost:3000/*"],
   "action": {
     "default_popup": "./src/popup/index.html",
@@ -15,6 +15,10 @@
   },
   "background": {
     "service_worker": "./background.js"
+  },
+  "oauth2": {
+    "client_id": "74124435618-vcb2d19nuaa3hb36eq45qnsq3016a5cg.apps.googleusercontent.com",
+    "scopes": []
   },
   "web_accessible_resources": [
     {
