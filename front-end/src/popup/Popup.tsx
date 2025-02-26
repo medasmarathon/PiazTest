@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Link as MuiLink, FormControl, InputLabel, TextField, Rating, Typography, Select, MenuItem } from '@mui/material';
 import { TLink, TLinkGroup } from '../types';
 import useLinks from '@/hooks/useLinks';
@@ -11,9 +11,43 @@ interface Tab {
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>('SaaS');
+  const [isLogin, setIsLogin] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const [description, setDescription] = useState<string>('');
   const [rating, setRating] = useState<number | undefined>(undefined);
   const { linksQuery, saveLink } = useLinks();
+
+  useEffect(() => {
+    chrome.storage.sync.get(null).then(user => {
+      if (Object.keys(user).includes("email")) {
+        chrome.runtime.sendMessage("has email");
+        setIsLogin(true);
+        setUserEmail(user["email"]);
+      }
+      chrome.runtime.sendMessage(user);
+    })
+  }, [])
+
+
+  if (!isLogin) {
+    return <Box sx={{ width: 200, p: 2 }}>
+      <Button variant='contained' onClick={() => {
+        chrome.identity.getAuthToken({interactive: true}, function(token) {
+          fetch('https://www.googleapis.com/oauth2/v1/userinfo', {
+            method: 'GET',
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          })
+            .then((response) => response.json())
+            .then(function (data) {
+              setIsLogin(true);
+              chrome.storage.sync.set({ ...data });
+            });
+        });
+      }}>Sign in with Google</Button>
+    </Box>
+  }
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

@@ -26,8 +26,19 @@ const Dashboard: React.FC = () => {
   const { linksQuery, deleteLink } = useLinks();
   const { data: links, isLoading: loading, error } = linksQuery;
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | 'All'>('All');
+  const [isLogin, setIsLogin] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
+
+  if (!isLogin) {
+    return <Container maxWidth="lg" sx={{ py: 4, height: '80vh' }}>
+      <Button onClick={() => {
+        chrome.identity.getAuthToken({interactive: true}, function(token) {
+          console.log(token);
+        });
+      }}>Sign in with Google</Button>
+    </Container>
+  }
 
   const handleDeleteClick = (url: string) => {
     setUrlToDelete(url);
