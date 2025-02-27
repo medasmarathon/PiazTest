@@ -9,3 +9,14 @@ export interface TLink {
   group: TLinkGroup;
   rating?: number;
 }
+
+export interface TLinkRequest {
+  id: string;
+  url: string;
+  title: string;
+  description?: string;
+  created_at: number;
+  group: TLinkGroup;
+  rating?: number;
+  email: string;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -15,29 +15,32 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Button
-} from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import useLinks from '../hooks/useLinks';
-import { TLinkGroup } from '../types';
+  Button,
+  CircularProgress,
+} from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import DeleteIcon from "@mui/icons-material/Delete";
+import useLinks from "../hooks/useLinks";
+import { TLinkGroup } from "../types";
+import useAuth from "@/hooks/useAuth";
 
 const Dashboard: React.FC = () => {
   const { linksQuery, deleteLink } = useLinks();
   const { data: links, isLoading: loading, error } = linksQuery;
-  const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | 'All'>('All');
-  const [isLogin, setIsLogin] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | "All">("All");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
+  const { isLogin, inProgress, googleSignIn } = useAuth();
 
   if (!isLogin) {
-    return <Container maxWidth="lg" sx={{ py: 4, height: '80vh' }}>
-      <Button onClick={() => {
-        chrome.identity.getAuthToken({interactive: true}, function(token) {
-          console.log(token);
-        });
-      }}>Sign in with Google</Button>
-    </Container>
+    return (
+      <Container maxWidth="lg" sx={{ py: 4, height: "80vh" }}>
+        <Button variant="contained" onClick={() => googleSignIn()}>
+          {inProgress && <CircularProgress />}
+          Sign in with Google
+        </Button>
+      </Container>
+    );
   }
 
   const handleDeleteClick = (url: string) => {
@@ -60,7 +63,7 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+      <Container maxWidth="md" sx={{ py: 4, textAlign: "center" }}>
         <Typography variant="h6">Loading links...</Typography>
       </Container>
     );
@@ -68,7 +71,7 @@ const Dashboard: React.FC = () => {
 
   if (error || !links) {
     return (
-      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+      <Container maxWidth="md" sx={{ py: 4, textAlign: "center" }}>
         <Typography variant="h6" color="error">
           Error loading links
         </Typography>
@@ -128,9 +131,8 @@ const Dashboard: React.FC = () => {
       field: "rating",
       headerName: "Rating",
       width: 100,
-      renderCell: (params) => (
-        params.value ? '★'.repeat(params.value) : 'No rating'
-      ),
+      renderCell: (params) =>
+        params.value ? "★".repeat(params.value) : "No rating",
     },
     {
       field: "created_at",
@@ -142,63 +144,66 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  const filteredLinks = selectedGroup === 'All'
-    ? links
-    : links.filter(link => link.group === selectedGroup);
+  const filteredLinks =
+    selectedGroup === "All"
+      ? links
+      : links.filter((link) => link.group === selectedGroup);
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ py: 4, height: '80vh' }}>
-      <Typography variant="h4" component="h1" align="center" gutterBottom>
-        Saved Links
-      </Typography>
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Filter by Group</InputLabel>
-        <Select
-          value={selectedGroup}
-          label="Filter by Group"
-          onChange={(e) => setSelectedGroup(e.target.value as TLinkGroup | 'All')}
-        >
-          <MenuItem value="All">All</MenuItem>
-          <MenuItem value="SaaS">SaaS</MenuItem>
-          <MenuItem value="AI">AI</MenuItem>
-          <MenuItem value="Crypto">Crypto</MenuItem>
-          <MenuItem value="E-commerce">E-commerce</MenuItem>
-        </Select>
-      </FormControl>
-      <Paper sx={{ height: '100%' }}>
-        <DataGrid
-          rows={filteredLinks}
-          columns={columns}
-          pageSizeOptions={[5, 10, 25]}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 10 },
-            },
-          }}
-          getRowId={(row) => row.id}
-          disableRowSelectionOnClick
-        />
-      </Paper>
-    </Container>
-    <Dialog
-      open={deleteDialogOpen}
-      onClose={handleDeleteCancel}
-      aria-labelledby="delete-dialog-title"
-    >
-      <DialogTitle id="delete-dialog-title">Confirm Delete</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Are you sure you want to delete this link?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleDeleteCancel}>Cancel</Button>
-        <Button onClick={handleDeleteConfirm} color="error" autoFocus>
-          Delete
-        </Button>
-      </DialogActions>
-    </Dialog>
+      <Container maxWidth="lg" sx={{ py: 4, height: "80vh" }}>
+        <Typography variant="h4" component="h1" align="center" gutterBottom>
+          Saved Links
+        </Typography>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Filter by Group</InputLabel>
+          <Select
+            value={selectedGroup}
+            label="Filter by Group"
+            onChange={(e) =>
+              setSelectedGroup(e.target.value as TLinkGroup | "All")
+            }
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="SaaS">SaaS</MenuItem>
+            <MenuItem value="AI">AI</MenuItem>
+            <MenuItem value="Crypto">Crypto</MenuItem>
+            <MenuItem value="E-commerce">E-commerce</MenuItem>
+          </Select>
+        </FormControl>
+        <Paper sx={{ height: "100%" }}>
+          <DataGrid
+            rows={filteredLinks}
+            columns={columns}
+            pageSizeOptions={[5, 10, 25]}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 10 },
+              },
+            }}
+            getRowId={(row) => row.id}
+            disableRowSelectionOnClick
+          />
+        </Paper>
+      </Container>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+      >
+        <DialogTitle id="delete-dialog-title">Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this link?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

@@ -1,9 +1,12 @@
 import { TLink } from '../types';
 
-const API_BASE_URL = 'http://localhost:3000/api/links';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const getLinks = async (): Promise<TLink[]> => {
-  const response = await fetch(API_BASE_URL);
+export const getLinks = async (email: string): Promise<TLink[]> => {
+  const params = new URLSearchParams({
+    userEmail: email
+  });
+  const response = await fetch(`${API_BASE_URL}/links/${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch links');
   }
@@ -11,7 +14,7 @@ export const getLinks = async (): Promise<TLink[]> => {
 };
 
 export const deleteLink = async (url: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/${encodeURIComponent(url)}`, {
+  const response = await fetch(`${API_BASE_URL}/links/${encodeURIComponent(url)}`, {
     method: 'DELETE',
   });
   if (!response.ok) {
@@ -20,7 +23,7 @@ export const deleteLink = async (url: string): Promise<void> => {
 };
 
 export const saveLink = async (link: Partial<TLink>): Promise<TLink> => {
-  const response = await fetch(API_BASE_URL, {
+  const response = await fetch(API_BASE_URL + "/links", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
