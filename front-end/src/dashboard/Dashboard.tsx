@@ -225,7 +225,6 @@ const Dashboard: React.FC = () => {
             <TextField
               value={editRow?.description}
               onChange={(e) => {
-                debugger;
                 setEditRow({
                   ...editRow,
                   description: String(e.target.value),

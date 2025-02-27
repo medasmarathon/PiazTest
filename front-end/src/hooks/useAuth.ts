@@ -17,16 +17,6 @@ export default function useAuth() {
     })
   }, [isLogin])
 
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-      if (key === "email" && typeof newValue === "string" && newValue.length > 0) {
-        setIsLogin(true);
-        setUserEmail(newValue);
-        console.log("Logging detected, new user email: " + newValue);
-      }
-    }
-  });
-
   const googleSignIn = () => {
     setInProgress(true);
     chrome.identity.getAuthToken({ interactive: true }, function (token?: string | undefined, grantedScopes?: string[] | undefined) {
