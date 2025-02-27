@@ -18,5 +18,5 @@ export interface TLinkRequest {
   created_at: number;
   group: TLinkGroup;
   rating?: number;
-  email: string;
+  userEmail: string;
 }

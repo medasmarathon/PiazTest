@@ -2,30 +2,29 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { TLink, TLinkRequest } from '../types';
 import { getLinks, deleteLink as deleteLinkApi, saveLink as saveLinkApi } from '../api/links';
 import useAuth from './useAuth';
-import { extensionLogging } from '@/utils';
 
 const useLinks = () => {
   const { userEmail } = useAuth();
   const linksQuery = useQuery<TLink[], Error>({
-    queryKey: ['links'],
+    queryKey: ['links', userEmail],
     queryFn: () => userEmail ? getLinks(userEmail) : []
   });
 
   if (linksQuery.error) {
     const err = linksQuery.error;
     let errorMsg = err instanceof Error ? err.message : 'Failed to fetch links';
-    extensionLogging("Get links error", errorMsg);
+    console.warn("Get links error", errorMsg, err);
   }
 
   const saveLink = useMutation<TLink, Error, Partial<TLinkRequest>>({
-    mutationFn: async (link: Partial<TLink>) => {
+    mutationFn: async (link: Partial<TLinkRequest>) => {
       const savedLink = await saveLinkApi(link);
       linksQuery.refetch();
       return savedLink;
     },
     onError: (err: unknown) => {
       let errorMsg = err instanceof Error ? err.message : 'Failed to save link';
-      extensionLogging("Save link error", errorMsg);
+      console.warn("Save link error", errorMsg, err);
     }
   });
 
@@ -37,7 +36,7 @@ const useLinks = () => {
     },
     onError: (err: unknown) => {
       let errorMsg = err instanceof Error ? err.message : 'Failed to delete link';
-      extensionLogging("Delete link error", errorMsg);
+      console.warn("Delete link error", errorMsg, err);
     }
   });
 

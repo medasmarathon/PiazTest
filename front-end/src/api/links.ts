@@ -6,7 +6,7 @@ export const getLinks = async (email: string): Promise<TLink[]> => {
   const params = new URLSearchParams({
     userEmail: email
   });
-  const response = await fetch(`${API_BASE_URL}/links/${params}`);
+  const response = await fetch(`${API_BASE_URL}/links?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch links');
   }

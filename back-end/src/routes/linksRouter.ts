@@ -41,7 +41,8 @@ router.post('/', async (req, res) => {
       .upsert({
         ...parsed,
         id: existedLink?.length > 0 ? existedLink[0].id : undefined,
-        created_at: new Date(parsed.created_at).toUTCString()
+        created_at: new Date(parsed.created_at).toUTCString(),
+        userEmail: req.body.userEmail
       })
       .select()
       .single();
@@ -79,13 +80,22 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Get all links
+// Get all links for a specific user
 router.get('/', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { userEmail } = req.query;
+    console.log("userEmail", userEmail);
+
+    let query = supabase
       .from('links')
       .select('*')
       .order('created_at', { ascending: false });
+
+    if (userEmail) {
+      query = query.eq('userEmail', userEmail);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       const err = new Error(`Failed to fetch links: ${error.message}`);

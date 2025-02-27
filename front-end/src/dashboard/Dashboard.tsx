@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -26,11 +26,15 @@ import useAuth from "@/hooks/useAuth";
 
 const Dashboard: React.FC = () => {
   const { linksQuery, deleteLink } = useLinks();
-  const { data: links, isLoading: loading, error } = linksQuery;
+  const { data: links, isLoading: loading, error, refetch } = linksQuery;
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | "All">("All");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
   const { isLogin, inProgress, googleSignIn } = useAuth();
+
+  useEffect(() => {
+    if (!links) refetch();
+  }, [isLogin])
 
   if (!isLogin) {
     return (

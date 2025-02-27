@@ -1,4 +1,4 @@
-import { extensionLogging, extensionRequest } from "@/utils";
+import { extensionRequest } from "@/utils";
 import { useState, useEffect } from "react";
 
 export default function useAuth() {
@@ -8,9 +8,9 @@ export default function useAuth() {
 
   useEffect(() => {
     extensionRequest("userEmail").then(userEmail => {
-      extensionLogging("check current user email", userEmail);
+      console.log("check current user email", userEmail);
       if (userEmail) {
-        extensionLogging("has email");
+        console.log("has email");
         setIsLogin(true);
         setUserEmail(userEmail);
       }
@@ -22,7 +22,7 @@ export default function useAuth() {
       if (key === "email" && typeof newValue === "string" && newValue.length > 0) {
         setIsLogin(true);
         setUserEmail(newValue);
-        extensionLogging("Logging detected, new user email: " + newValue);
+        console.log("Logging detected, new user email: " + newValue);
       }
     }
   });
@@ -39,9 +39,10 @@ export default function useAuth() {
         .then(async (response) => {
           let data = await response.json();
           setIsLogin(true);
+          setUserEmail(data["email"]);
           await chrome.storage.sync.set({ ...data });
         })
-        .catch(e => extensionLogging((e as Error).message))
+        .catch(e => console.log((e as Error).message))
         .finally(() => setInProgress(false));
     });
   }

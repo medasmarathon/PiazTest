@@ -15,7 +15,6 @@ import {
 import { TLinkGroup, TLinkRequest } from "../types";
 import useLinks from "@/hooks/useLinks";
 import useAuth from "@/hooks/useAuth";
-import { extensionLogging } from "@/utils";
 
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
@@ -25,7 +24,7 @@ const Popup: React.FC = () => {
   const { linksQuery, saveLink } = useLinks();
   const { isLogin, inProgress, userEmail, googleSignIn } = useAuth();
 
-  extensionLogging("popup render", isLogin)
+  console.log("popup render", isLogin)
   if (!isLogin) {
     return (
       <Box sx={{ width: 200, p: 2 }}>
@@ -56,9 +55,10 @@ const Popup: React.FC = () => {
       created_at: Date.now(),
       group: selectedGroup,
       rating,
-      email: userEmail,
+      userEmail,
     };
 
+    console.log("new link", JSON.stringify(newLink));
     const success = await saveLink.mutateAsync(newLink);
     if (success) {
       setIsSaved(true);
