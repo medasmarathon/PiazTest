@@ -15,20 +15,26 @@ import {
 import { TLinkGroup, TLinkRequest } from "../types";
 import useLinks from "@/hooks/useLinks";
 import useAuth from "@/hooks/useAuth";
+import GoogleIcon from "@mui/icons-material/Google";
 
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>("SaaS");
   const [description, setDescription] = useState<string>("");
   const [rating, setRating] = useState<number | undefined>(undefined);
-  const { linksQuery, saveLink } = useLinks();
   const { isLogin, inProgress, userEmail, googleSignIn } = useAuth();
+  const { linksQuery, saveLink } = useLinks(userEmail);
 
-  console.log("popup render", isLogin)
+  console.log("popup render", isLogin);
   if (!isLogin) {
     return (
-      <Box sx={{ width: 200, p: 2 }}>
-        <Button variant="contained" onClick={() => googleSignIn()}>
+      <Box sx={{ width: 300, p: 2 }}>
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={() => googleSignIn()}
+          startIcon={<GoogleIcon />}
+        >
           {inProgress && <CircularProgress />}
           Sign in with Google
         </Button>
@@ -67,7 +73,7 @@ const Popup: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: 200, p: 2 }}>
+    <Box sx={{ width: 300, p: 2 }}>
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Group</InputLabel>
         <Select

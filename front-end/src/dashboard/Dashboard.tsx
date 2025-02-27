@@ -25,12 +25,12 @@ import { TLinkGroup } from "../types";
 import useAuth from "@/hooks/useAuth";
 
 const Dashboard: React.FC = () => {
-  const { linksQuery, deleteLink } = useLinks();
-  const { data: links, isLoading: loading, error } = linksQuery;
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | "All">("All");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
-  const { isLogin, inProgress, googleSignIn } = useAuth();
+  const { isLogin, inProgress, userEmail, googleSignIn } = useAuth();
+  const { linksQuery, deleteLink } = useLinks(userEmail);
+  const { data: links, isLoading: loading, error } = linksQuery;
 
   console.log("dashboard render", isLogin)
   if (!isLogin) {

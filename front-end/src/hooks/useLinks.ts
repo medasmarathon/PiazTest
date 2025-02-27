@@ -1,10 +1,8 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { TLink, TLinkRequest } from '../types';
 import { getLinks, deleteLink as deleteLinkApi, saveLink as saveLinkApi } from '../api/links';
-import useAuth from './useAuth';
 
-const useLinks = () => {
-  const { userEmail } = useAuth();
+const useLinks = (userEmail?: string) => {
   const linksQuery = useQuery<TLink[], Error>({
     queryKey: ['links', userEmail],
     queryFn: () => userEmail ? getLinks(userEmail) : []
