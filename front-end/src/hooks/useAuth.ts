@@ -1,3 +1,4 @@
+import { extensionLogging, extensionRequest } from "@/utils";
 import { useState, useEffect } from "react";
 
 export default function useAuth() {
@@ -6,16 +7,25 @@ export default function useAuth() {
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    chrome.storage.sync.get(null).then(user => {
-      if (Object.keys(user).includes("email")) {
+    extensionRequest("userEmail").then(userEmail => {
+      extensionLogging("check current user email", userEmail);
+      if (userEmail) {
         extensionLogging("has email");
         setIsLogin(true);
-        setUserEmail(user["email"]);
+        setUserEmail(userEmail);
       }
-      extensionLogging(userEmail);
     })
   }, [])
 
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+      if (key === "email" && typeof newValue === "string" && newValue.length > 0) {
+        setIsLogin(true);
+        setUserEmail(newValue);
+        extensionLogging("Logging detected, new user email: " + newValue);
+      }
+    }
+  });
 
   const googleSignIn = () => {
     setInProgress(true);
