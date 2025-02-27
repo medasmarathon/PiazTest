@@ -1,4 +1,3 @@
-import { extensionRequest } from "@/utils";
 import { useState, useEffect } from "react";
 
 export default function useAuth() {
@@ -7,15 +6,13 @@ export default function useAuth() {
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    extensionRequest("userEmail").then(userEmail => {
-      console.log("check current user email", userEmail);
-      if (userEmail) {
-        console.log("has email");
+    chrome.runtime.sendMessage({ type: "userEmail" }, (response) => {
+      if (response['message']) {
         setIsLogin(true);
-        setUserEmail(userEmail);
+        setUserEmail(response['message']);
       }
     })
-  }, [isLogin])
+  }, [])
 
   const googleSignIn = () => {
     setInProgress(true);
@@ -32,7 +29,7 @@ export default function useAuth() {
           setUserEmail(data["email"]);
           await chrome.storage.sync.set({ ...data });
         })
-        .catch(e => console.log((e as Error).message))
+        .catch(e => console.warn((e as Error).message))
         .finally(() => setInProgress(false));
     });
   }

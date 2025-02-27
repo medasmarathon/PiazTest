@@ -15,32 +15,37 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   }
 });
 
-chrome.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
+const handleGetUserEmail = async (sendResponse: (response: any) => void) => {
+  let syncStorage = await chrome.storage.sync.get(null);
+  sendResponse({
+    type: "userEmail",
+    message: Object.keys(syncStorage).includes("email")
+      ? syncStorage["email"]
+      : null,
+  });
+}
+
+const handleCheckLogin = async (sendResponse: (response: any) => void) => {
+  let syncStorage = await chrome.storage.sync.get(null);
+  sendResponse({
+    type: "isLogin",
+    message: String(Object.keys(syncStorage).includes("email")),
+  });
+}
+
+chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   console.log("background message received: ", data);
-  let syncStorage;
   switch (data.type) {
     case "log":
       console.log(data.message);
       break;
 
     case "isLogin":
-      syncStorage = await chrome.storage.sync.get(null);
-      console.log(syncStorage);
-      sendResponse({
-        type: data.type,
-        message: String(Object.keys(syncStorage).includes("email")),
-      });
+      handleCheckLogin(sendResponse);
       break;
 
     case "userEmail":
-      syncStorage = await chrome.storage.sync.get(null);
-      console.log(syncStorage);
-      sendResponse({
-        type: data.type,
-        message: Object.keys(syncStorage).includes("email")
-          ? syncStorage["email"]
-          : null,
-      });
+      handleGetUserEmail(sendResponse)
       break;
 
     default:

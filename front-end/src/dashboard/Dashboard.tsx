@@ -39,7 +39,6 @@ const Dashboard: React.FC = () => {
   const { linksQuery, deleteLink, saveLink } = useLinks(userEmail);
   const { data: links, isLoading: loading, error } = linksQuery;
 
-  console.log("dashboard render", isLogin);
   if (!isLogin) {
     return (
       <Container maxWidth="lg" sx={{ py: 4, height: "80vh" }}>

@@ -25,7 +25,6 @@ const Popup: React.FC = () => {
   const { isLogin, inProgress, userEmail, googleSignIn } = useAuth();
   const { linksQuery, saveLink } = useLinks(userEmail);
 
-  console.log("popup render", isLogin);
   if (!isLogin) {
     return (
       <Box sx={{ width: 300, p: 2 }}>
@@ -64,7 +63,6 @@ const Popup: React.FC = () => {
       userEmail,
     };
 
-    console.log("new link", JSON.stringify(newLink));
     const success = await saveLink.mutateAsync(newLink);
     if (success) {
       setIsSaved(true);

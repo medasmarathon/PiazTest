@@ -84,7 +84,6 @@ router.put('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { userEmail } = req.query;
-    console.log("userEmail", userEmail);
 
     let query = supabase
       .from('links')
