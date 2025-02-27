@@ -26,16 +26,13 @@ import useAuth from "@/hooks/useAuth";
 
 const Dashboard: React.FC = () => {
   const { linksQuery, deleteLink } = useLinks();
-  const { data: links, isLoading: loading, error, refetch } = linksQuery;
+  const { data: links, isLoading: loading, error } = linksQuery;
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | "All">("All");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
   const { isLogin, inProgress, googleSignIn } = useAuth();
 
-  useEffect(() => {
-    if (!links) refetch();
-  }, [isLogin])
-
+  console.log("dashboard render", isLogin)
   if (!isLogin) {
     return (
       <Container maxWidth="lg" sx={{ py: 4, height: "80vh" }}>

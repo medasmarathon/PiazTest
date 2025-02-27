@@ -19,6 +19,7 @@ export default defineConfig({
     }
   ],
   build: {
+    sourcemap: true,
     rollupOptions: {
       input: {
         popup: 'src/popup/index.html',

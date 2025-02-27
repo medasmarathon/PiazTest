@@ -15,7 +15,7 @@ export default function useAuth() {
         setUserEmail(userEmail);
       }
     })
-  }, [])
+  }, [isLogin])
 
   chrome.storage.onChanged.addListener((changes, namespace) => {
     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {

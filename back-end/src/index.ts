@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import linksRouter from './routes/linksRouter';
-import authRouter from './routes/authRouter';
 import { Database } from '../database.types';
 
 dotenv.config();
@@ -27,8 +26,6 @@ app.use("/", (req, res, next) => {
   console.log(req.method, req.originalUrl);
   next();
 })
-// Use auth router
-app.use('/api/auth', authRouter);
 
 // Use links router
 app.use('/api/links', linksRouter);
