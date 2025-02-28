@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Container, FormControl, InputLabel, Select, MenuItem, CircularProgress, Button, Typography } from "@mui/material";
 import useLinks from "../hooks/useLinks";
-import { TLinkGroup, TLinkRequest } from "../types";
+import { TLinkGroup } from "../types";
 import useAuth from "@/hooks/useAuth";
 import AppBarWithMenu from "./AppBarWithMenu";
-import LinksDataGrid from "./LinksDataGrid";
+import LinksDataGrid from "../components/LinksDataGrid";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 const Dashboard: React.FC = () => {
