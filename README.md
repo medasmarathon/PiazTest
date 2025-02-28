@@ -77,10 +77,8 @@ DATABASE_URL=your_database_url
 ### Front-end .env
 
 ```env
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=your_backend_api_url
 ```
-
-- `VITE_API_BASE_URL`: your backend api url
 
 ## Running the Project
 
@@ -122,9 +120,7 @@ cd back-end
 npm run build && node dist/src/index
 ```
 
-*Note*: please set your environment variables accordingly before starting the below scripts. Meaning you can either set environment in your server, or create an `.env` file inside build folder.
-
-If `NODE_ENV` value is not set, by default the server will use SQLite as database.
+*Note*: please set your environment variables accordingly before starting the below scripts. Meaning you can either set environment in your server, or create an `.env` file inside build folder (`./back-end/dist`).
 
 ```bash
 npm run start
