@@ -89,7 +89,7 @@ const Popup: React.FC = () => {
       url,
       title,
       description: description.trim(),
-      created_at: new Date(createdAt as any).getTime() ?? Date.now(),
+      created_at: createdAt ? new Date(createdAt as any).getTime() : Date.now(),
       group: selectedGroup,
       rating,
       userEmail,
@@ -98,7 +98,6 @@ const Popup: React.FC = () => {
     const success = await saveLink.mutateAsync(newLink);
     if (success) {
       setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
     }
   };
 

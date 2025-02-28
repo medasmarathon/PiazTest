@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
     let result = await linkRepository.save({
       ...parsed,
       id: existedLink ? existedLink.id : undefined,
-      created_at: new Date(parsed.created_at).toUTCString(),
+      created_at: parsed.created_at ? new Date(parsed.created_at).toUTCString() : new Date().toUTCString(),
       userEmail: req.body.userEmail
     });
 
