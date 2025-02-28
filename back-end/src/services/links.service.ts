@@ -2,11 +2,9 @@ import { CreateLinkRequest } from '../dto/createLinkRequest';
 import { UpdateLinkRequest } from '../dto/updateLinkRequest';
 import { LinkModel } from '../model/LinkModel';
 import { AppDataSource } from '../data-source';
-import { handleError } from '../utils/error';
+import { ErrorCode, handleError } from '../utils/error';
 
 const linkRepository = AppDataSource.getRepository(LinkModel);
-
-
 
 type CreateLinkInput = typeof CreateLinkRequest._input;
 type UpdateLinkInput = typeof UpdateLinkRequest._input;
@@ -33,6 +31,15 @@ export class LinksService {
 
   async updateLink(id: string, updateLinkRequest: UpdateLinkInput, userEmail: string) {
     try {
+      const existingLink = await linkRepository.findOneBy({ id });
+      if (!existingLink) {
+        throw new Error('Link not found');
+      }
+
+      if (existingLink.userEmail !== userEmail) {
+        throw new Error('Unauthorized to update this link');
+      }
+
       const parsed = UpdateLinkRequest.parse(updateLinkRequest);
       return await linkRepository.save({
         ...parsed,
@@ -40,6 +47,23 @@ export class LinksService {
         userEmail
       });
     } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === 'Link not found') {
+          handleError({
+            code: ErrorCode.NOT_FOUND,
+            statusCode: 404,
+            message: 'Link not found',
+            details: { id }
+          });
+        } else if (error.message === 'Unauthorized to update this link') {
+          handleError({
+            code: ErrorCode.UNAUTHORIZED,
+            statusCode: 401,
+            message: 'Unauthorized to update this link',
+            details: { id, userEmail }
+          });
+        }
+      }
       handleError(error);
     }
   }
@@ -59,8 +83,20 @@ export class LinksService {
 
   async getLinkById(id: string) {
     try {
-      return await linkRepository.findOneBy({ id });
+      const link = await linkRepository.findOneBy({ id });
+      if (!link) {
+        throw new Error('Link not found');
+      }
+      return link;
     } catch (error) {
+      if (error instanceof Error && error.message === 'Link not found') {
+        handleError({
+          code: ErrorCode.NOT_FOUND,
+          statusCode: 404,
+          message: 'Link not found',
+          details: { id }
+        });
+      }
       handleError(error);
     }
   }
@@ -68,11 +104,21 @@ export class LinksService {
   async deleteLinkByUrl(url: string) {
     try {
       const linkToRemove = await linkRepository.findOneBy({ url });
-      if (!linkToRemove) return null;
+      if (!linkToRemove) {
+        throw new Error('Link not found');
+      }
 
       await linkRepository.remove(linkToRemove);
       return true;
     } catch (error) {
+      if (error instanceof Error && error.message === 'Link not found') {
+        handleError({
+          code: ErrorCode.NOT_FOUND,
+          statusCode: 404,
+          message: 'Link not found',
+          details: { url }
+        });
+      }
       handleError(error);
     }
   }
