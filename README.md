@@ -1,8 +1,8 @@
-# Link Manager Project
+# Affiliate Link Manager Extension
 
 ## Overview
 
-This project consists of a full-stack application for managing links, with a React front-end and a TypeScript back-end using Supabase as the database. The extension allows users to create, update, and manage links with additional features like grouping and rating.
+This project consists of a full-stack application for managing links, with a React front-end and a TypeScript back-end using either SQLite or Supabase as the database. The extension allows users to create, update, and manage links with additional features like grouping and rating.
 
 User needs to login with their google account to start using the functionalities. Also the links will be saved, and listed per user, and across all browser instances, given that user is signed in, and we set up to point to the same back end server.
 
@@ -56,9 +56,7 @@ Create `.env` files in both front-end and back-end directories with the followin
 ### Back-end .env
 
 ```env
-PORT=3001
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
+DATABASE_URL=your_database_url
 ```
 
 ### Front-end .env
@@ -67,7 +65,7 @@ SUPABASE_KEY=your_supabase_key
 VITE_API_BASE_URL=http://localhost:3001
 ```
 
-- VITE_API_BASE_URL: your backend api url
+- `VITE_API_BASE_URL`: your backend api url
 
 ## Running the Project
 
@@ -80,9 +78,7 @@ cd back-end
 npm run dev
 ```
 
-- If you want to use local Supabase:
-  - Ensure Docker installed. Run `npm run supabase -- start` and wait for its services to start up. Or `npm run supabase -- start --ignore-health-check` would be more convenient.
-  - Use Supabase Url and Key to put into the `.env` file.
+- For Local run like above, it will use SQLite as database.
 
 #### Local front-end chrome extension
 
@@ -93,20 +89,26 @@ npm run build
 
 - Then go to any browser, go to "Manage Extensions". Enable "Developer mode", then click "Load unpacked", and select `front-end/dist` folder. Then you'll get your extension installed.
 
-### Build for production
+### Production
 
 #### Start the back-end server
-
-Note: for production, please set your environment variables accordingly before starting the below scripts.
 
 ```bash
 cd back-end
 npm run build && node dist/src/index
 ```
 
+*Note*: please set your environment variables accordingly before starting the below scripts. Meaning you can either set environment in your server, or create an `.env` file inside build folder.
+
+If `NODE_ENV` value is not set, by default the server will use SQLite as database.
+
+```bash
+npm run start
+```
+
 #### Start the front-end chrome extension
 
-Same with the above setup. Also we may want to pack the extension and get user to install the packed one, or install from extension store (this will need publishing step).
+Same with the above setup. We may also want to pack the extension and get user to install the packed one, or install from extension store (this will need publishing step).
 
 ## Design decision
 

@@ -8,7 +8,6 @@
     "dev": "ts-node-dev src/index.ts",
     "build": "rimraf ./dist && tsc",
     "start": "cd dist && node ./index.js",
-    "prod": "npm run build && npm run start",
     "typeorm": "cross-replace typeorm-ts-node-commonjs -d src/data-source.ts",
     "typeorm:migration:generate": "cross-replace typeorm-ts-node-commonjs -d src/data-source.ts migration:generate src/migration/$npm_config_name",
     "typeorm:migration:run": "cross-replace typeorm-ts-node-commonjs -d src/data-source.ts migration:run"

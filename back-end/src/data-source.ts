@@ -3,12 +3,12 @@ import { DataSource } from "typeorm";
 import { LinkModel } from "./model/LinkModel";
 import dotenv from 'dotenv';
 
-let isDevelopment = process.env.NODE_ENV === "development";
+let isEnvUnset = process.env.NODE_ENV === undefined;
 
 dotenv.config({ path: `.env` });
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-export const AppDataSource = isDevelopment ?
+export const AppDataSource = isEnvUnset ?
     new DataSource({
         type: "sqlite",
         database: `database.${process.env.NODE_ENV}.sqlite`,
