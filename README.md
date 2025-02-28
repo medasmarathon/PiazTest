@@ -104,6 +104,8 @@ npm run dev
 
 #### Local front-end chrome extension
 
+**Important**: Ensure your backend API URL is included in `host_permissions` of `manifest.json` file.
+
 ```bash
 cd front-end
 npm run build
