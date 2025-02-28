@@ -15,6 +15,7 @@ interface ApiError extends Error {
 const handleError = (error: unknown, res: any) => {
   if (error instanceof Error) {
     const apiError = error as ApiError;
+    console.log("Server Error", apiError.message);
     res.status(apiError.statusCode || 500).json({
       error: apiError.message || 'An unexpected error occurred'
     });

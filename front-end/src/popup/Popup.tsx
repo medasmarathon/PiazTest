@@ -20,10 +20,48 @@ import GoogleIcon from "@mui/icons-material/Google";
 const Popup: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup>("SaaS");
+  const [url, setUrl] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [createdAt, setCreatedAt] = useState<number | undefined>();
   const [rating, setRating] = useState<number | undefined>(undefined);
   const { isLogin, inProgress, userEmail, googleSignIn } = useAuth();
   const { linksQuery, saveLink } = useLinks(userEmail);
+
+  useEffect(() => {
+    if (!linksQuery.data) return;
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    })
+      .then(([tab]) => {
+        let savedData = linksQuery.data.find(l => l.url === tab.url);
+        if (!savedData) {
+          setTitle(tab.title ?? "");
+          setUrl(tab.url ?? "");
+          return;
+        };
+
+        if (selectedGroup === savedData.group && rating === savedData.rating && description === savedData.description && title === savedData.title) {
+          setIsSaved(true);
+        }
+        setUrl(savedData.url);
+        setTitle(savedData.title);
+        setRating(savedData.rating);
+        setDescription(savedData.description ?? "");
+        setSelectedGroup(savedData.group);
+        setCreatedAt(savedData.created_at);
+      });
+
+    return () => {
+      setUrl("");
+      setTitle("");
+      setRating(undefined);
+      setDescription("");
+      setSelectedGroup("SaaS");
+      setCreatedAt(undefined);
+    }
+  }, [linksQuery.data])
 
   if (!isLogin) {
     return (
@@ -42,12 +80,6 @@ const Popup: React.FC = () => {
   }
 
   const handleSave = async () => {
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    const { url, title } = tab;
-
     if (!url || !title) {
       return;
     }
@@ -57,7 +89,7 @@ const Popup: React.FC = () => {
       url,
       title,
       description: description.trim(),
-      created_at: Date.now(),
+      created_at: new Date(createdAt as any).getTime() ?? Date.now(),
       group: selectedGroup,
       rating,
       userEmail,
@@ -77,7 +109,10 @@ const Popup: React.FC = () => {
         <Select
           value={selectedGroup}
           label="Group"
-          onChange={(e) => setSelectedGroup(e.target.value as TLinkGroup)}
+          onChange={(e) => {
+            setSelectedGroup(e.target.value as TLinkGroup);
+            setIsSaved(false);
+          }}
         >
           <MenuItem value="SaaS">SaaS</MenuItem>
           <MenuItem value="AI">AI</MenuItem>
@@ -85,12 +120,26 @@ const Popup: React.FC = () => {
           <MenuItem value="E-commerce">E-commerce</MenuItem>
         </Select>
       </FormControl>
+      <TextField
+        fullWidth
+        label="Title"
+        value={title}
+        onChange={(e) => {
+          setTitle(e.target.value);
+          setIsSaved(false);
+        }}
+        sx={{ mb: 2 }}
+        rows={2}
+      />
       <Box sx={{ mb: 2 }}>
         <Typography component="legend">Rating</Typography>
         <Rating
           name="link-rating"
           value={rating ?? 0}
-          onChange={(event, newValue) => setRating(newValue ?? undefined)}
+          onChange={(event, newValue) => {
+            setRating(newValue ?? undefined);
+            setIsSaved(false);
+          }}
           max={5}
         />
       </Box>
@@ -98,7 +147,10 @@ const Popup: React.FC = () => {
         fullWidth
         label="Description"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={(e) => {
+          setDescription(e.target.value);
+          setIsSaved(false);
+        }}
         sx={{ mb: 2 }}
         multiline
         rows={2}
