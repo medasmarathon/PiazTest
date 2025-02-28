@@ -28,7 +28,6 @@ User needs to login with their google account to start using the functionalities
 .
 ├── back-end/              # Back-end code
 │   ├── src/               # Source files
-│   ├── supabase/           # Supabase configuration
 │   └── package.json       # Back-end dependencies
 ├── front-end/              # Front-end code
 │   ├── src/               # Source files

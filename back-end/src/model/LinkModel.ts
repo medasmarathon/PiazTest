@@ -1,4 +1,3 @@
-import { User } from "@supabase/supabase-js";
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
 
 @Entity("links")

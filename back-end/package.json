@@ -6,10 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev src/index.ts",
-    "build": "tsc",
+    "build": "rimraf ./dist && tsc",
     "start": "cd dist && node ./index.js",
     "prod": "npm run build && npm run start",
-    "start:prod": "cd dist && env NODE_ENV=prod node ./index.js",
     "typeorm": "cross-replace typeorm-ts-node-commonjs -d src/data-source.ts",
     "typeorm:migration:generate": "cross-replace typeorm-ts-node-commonjs -d src/data-source.ts migration:generate src/migration/$npm_config_name",
     "typeorm:migration:run": "cross-replace typeorm-ts-node-commonjs -d src/data-source.ts migration:run"
@@ -18,7 +17,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -33,6 +31,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.5",
     "cross-replace": "^0.2.0",
+    "rimraf": "^6.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
   }
