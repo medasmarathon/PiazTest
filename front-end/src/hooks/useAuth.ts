@@ -34,10 +34,15 @@ export default function useAuth() {
     });
   }
 
+  const signOut = () => {
+    chrome.storage.sync.clear();
+  }
+
   return {
     isLogin,
     inProgress,
     userEmail,
-    googleSignIn
+    googleSignIn,
+    signOut
   }
 }

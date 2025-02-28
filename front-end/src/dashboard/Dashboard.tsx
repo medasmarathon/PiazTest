@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -17,6 +17,11 @@ import {
   DialogActions,
   Button,
   CircularProgress,
+  AppBar,
+  Toolbar,
+  Avatar,
+  Menu,
+  styled,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -29,13 +34,24 @@ import { TLinkGroup, TLinkRequest } from "../types";
 import useAuth from "@/hooks/useAuth";
 
 const Dashboard: React.FC = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const [selectedGroup, setSelectedGroup] = useState<TLinkGroup | "All">("All");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<string | null>(null);
   const [editRow, setEditRow] = useState<
     (Partial<TLinkRequest> & { created_at: number }) | null
   >(null);
-  const { isLogin, inProgress, userEmail, googleSignIn } = useAuth();
+  const { isLogin, inProgress, userEmail, googleSignIn, signOut } = useAuth();
   const { linksQuery, deleteLink, saveLink } = useLinks(userEmail);
   const { data: links, isLoading: loading, error } = linksQuery;
 
@@ -285,10 +301,57 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Saved Links
+          </Typography>
+          <IconButton
+            onClick={handleMenuClick}
+            size="small"
+            sx={{ ml: 2 }}
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+            <Avatar sx={{ width: 32, height: 32 }}>
+              {userEmail?.charAt(0).toUpperCase()}
+            </Avatar>
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
+            open={open}
+            onClose={handleMenuClose}
+            onClick={handleMenuClose}
+            slotProps={{
+              paper: {
+                sx: {
+                  overflow: 'visible',
+                  mt: 1.5,
+                  '& .MuiAvatar-root': {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                },
+              }
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={() => {
+              handleMenuClose();
+              signOut();
+              window.location.reload();
+            }}>
+              Logout
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
       <Container maxWidth="lg" sx={{ py: 4, height: "80vh" }}>
-        <Typography variant="h4" component="h1" align="center" gutterBottom>
-          Saved Links
-        </Typography>
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Filter by Group</InputLabel>
           <Select

@@ -73,6 +73,9 @@ router.get('/', async (req, res) => {
     let userSavedLinks = await linkRepository.find({
       where: {
         userEmail: String(userEmail)
+      },
+      order: {
+        created_at: "desc"
       }
     });
     res.status(200).json(userSavedLinks);
