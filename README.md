@@ -114,7 +114,7 @@ Same with the above setup. Also we may want to pack the extension and get user t
 - We want to save affiliate links with details. Thus designing the `Link` table with required information (url, title, description, group, rating).
 - We don't want different users' links to be mixed up together, so I need to have user differentiation. For the scope of the project, I don't plan to scaffold a full scale authentication server and all of its authenticate, authorize logic, so decided to go with simple Google sign in on front end.
 - We don't want to restrict user to access the extension functionalities, and as it's just an MVP product, so I just omitted the sign up flow.
-- At this point, I only use user email as user's PII. So following KISS and YAGNI principles, just provide an additional `userEmail` column for the `Link` table, instead of spawning another table for storing user details. Then update and query links base on user email. More complex usa cases should be handled later.
+- At this point, I only use user email as user's PII. So following KISS and YAGNI principles, just provide an additional `userEmail` column for the `Link` table, instead of spawning another table for storing user details. Then update and query links base on user email. More complex use cases should be handled later.
 
 ## Database Setup
 
