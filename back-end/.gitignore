@@ -5,3 +5,4 @@ dist/
 *.log
 firebase-app.ts
 *.sqlite
+**/db_data/**/*
