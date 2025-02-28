@@ -24,15 +24,30 @@ User needs to login with their google account to start using the functionalities
 
 ## Project Structure
 
-```text
-.
-├── back-end/              # Back-end code
-│   ├── src/               # Source files
-│   └── package.json       # Back-end dependencies
-├── front-end/              # Front-end code
-│   ├── src/               # Source files
-│   ├── public/            # Static assets
-│   └── package.json       # Front-end dependencies
+```
+back-end/
+  src/ - Backend source code
+    dto/ - Data transfer objects
+    middleware/ - Express middleware
+    migration/ - Database migrations
+    model/ - Database models
+    routes/ - API routes
+    services/ - Business logic
+    utils/ - Utility functions
+  docker-compose.yml - Docker configuration
+  package.json - Backend dependencies
+
+front-end/
+  public/ - Static assets and icons
+  src/ - Frontend source code
+    api/ - API client
+    assets/ - Static assets
+    components/ - React components
+    dashboard/ - Dashboard page
+    hooks/ - Custom hooks
+    popup/ - Popup page
+    providers/ - Context providers
+  package.json - Frontend dependencies
 ```
 
 ## Installation Guide
