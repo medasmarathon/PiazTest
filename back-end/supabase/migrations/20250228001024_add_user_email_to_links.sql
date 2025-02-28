@@ -1,2 +1,0 @@
-ALTER TABLE links
-ADD COLUMN "userEmail" TEXT;

@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import { supabase } from '../index';
-import { CreateLinkRequest, CreateLinkRequestType } from '../dto/createLinkRequest';
-import { UpdateLinkRequest, UpdateLinkRequestType } from '../dto/updateLinkRequest';
+import { CreateLinkRequest } from '../dto/createLinkRequest';
+import { UpdateLinkRequest } from '../dto/updateLinkRequest';
+import { LinkModel } from '../model/LinkModel';
+import { AppDataSource } from '../data-source';
 
+const linkRepository = AppDataSource.getRepository(LinkModel)
 const router = Router();
 
 // Centralized error handling
@@ -25,34 +27,18 @@ const handleError = (error: unknown, res: any) => {
 router.post('/', async (req, res) => {
   try {
     const parsed = CreateLinkRequest.parse(req.body);
-    const { data: existedLink, error: existedLinkError } = await supabase
-      .from('links')
-      .select()
-      .eq("url", parsed.url);
+    const existedLink = await linkRepository.findOne({
+      where: { url: parsed.url }
+    })
 
-    if (existedLinkError) {
-      const err = new Error(`Failed to create link: ${existedLinkError.message}`);
-      (err as ApiError).statusCode = 400;
-      throw err;
-    }
+    let result = await linkRepository.save({
+      ...parsed,
+      id: existedLink ? existedLink.id : undefined,
+      created_at: new Date(parsed.created_at).toUTCString(),
+      userEmail: req.body.userEmail
+    });
 
-    const { data, error } = await supabase
-      .from('links')
-      .upsert({
-        ...parsed,
-        id: existedLink?.length > 0 ? existedLink[0].id : undefined,
-        created_at: new Date(parsed.created_at).toUTCString(),
-        userEmail: req.body.userEmail
-      })
-      .select()
-      .single();
-
-    if (error) {
-      const err = new Error(`Failed to create link: ${error.message}`);
-      (err as ApiError).statusCode = 400;
-      throw err;
-    }
-    res.status(201).json(data);
+    res.status(201).json(result);
   } catch (error) {
     handleError(error, res);
   }
@@ -62,19 +48,13 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const parsed = UpdateLinkRequest.parse(req.body);
-    const { data, error } = await supabase
-      .from('links')
-      .update(parsed)
-      .eq('id', req.params.id)
-      .select()
-      .single();
+    let result = await linkRepository.save({
+      ...parsed,
+      id: req.params.id,
+      userEmail: req.body.userEmail
+    });
 
-    if (error) {
-      const err = new Error(`Failed to update link: ${error.message}`);
-      (err as ApiError).statusCode = 400;
-      throw err;
-    }
-    res.status(200).json(data);
+    res.status(200).json(result);
   } catch (error) {
     handleError(error, res);
   }
@@ -84,24 +64,17 @@ router.put('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { userEmail } = req.query;
-
-    let query = supabase
-      .from('links')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (userEmail) {
-      query = query.eq('userEmail', userEmail);
+    if (!userEmail) {
+      res.status(200).json([]);
+      return;
     }
 
-    const { data, error } = await query;
-
-    if (error) {
-      const err = new Error(`Failed to fetch links: ${error.message}`);
-      (err as ApiError).statusCode = 500;
-      throw err;
-    }
-    res.status(200).json(data);
+    let userSavedLinks = await linkRepository.find({
+      where: {
+        userEmail: String(userEmail)
+      }
+    });
+    res.status(200).json(userSavedLinks);
   } catch (error) {
     handleError(error, res);
   }
@@ -110,18 +83,8 @@ router.get('/', async (req, res) => {
 // Get a specific link
 router.get('/:id', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('links')
-      .select('*')
-      .eq('id', req.params.id)
-      .single();
-
-    if (error) {
-      const err = new Error(`Failed to fetch link: ${error.message}`);
-      (err as ApiError).statusCode = 404;
-      throw err;
-    }
-    res.status(200).json(data);
+    let foundLink = await linkRepository.findOneBy({ id: req.params.id });
+    res.status(200).json(foundLink);
   } catch (error) {
     handleError(error, res);
   }
@@ -130,37 +93,38 @@ router.get('/:id', async (req, res) => {
 // Update a link
 router.put('/:id', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('links')
-      .update(req.body)
-      .eq('id', req.params.id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    res.status(200).json(data);
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'An unknown error occurred' });
+    const parsed = CreateLinkRequest.parse(req.body);
+    const existedLink = await linkRepository.findOne({
+      where: { url: parsed.url }
+    })
+    if (!existedLink) {
+      res.sendStatus(404);
+      return;
     }
+
+    let result = await linkRepository.save({
+      ...parsed,
+      id: existedLink.id,
+      created_at: new Date(parsed.created_at).toUTCString(),
+      userEmail: req.body.userEmail
+    });
+
+    res.status(201).json(result);
+  } catch (error) {
+    handleError(error, res);
   }
 });
 
 // Delete a link
 router.delete('/:url', async (req, res) => {
   try {
-    const { error } = await supabase
-      .from('links')
-      .delete()
-      .eq('url', decodeURIComponent(req.params.url));
-
-    if (error) {
-      const err = new Error(`Failed to delete link: ${error.message}`);
-      (err as ApiError).statusCode = 500;
-      throw err;
+    let linkToRemove = await linkRepository.findOneBy({ url: req.params.url });
+    if (!linkToRemove) {
+      res.sendStatus(404);
+      return;
     }
+
+    await linkRepository.remove(linkToRemove);
     res.status(204).send();
   } catch (error) {
     handleError(error, res);
