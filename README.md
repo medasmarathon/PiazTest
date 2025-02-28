@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project consists of a full-stack application for managing links, with a React front-end and a TypeScript back-end using either SQLite or Supabase as the database. The extension allows users to create, update, and manage links with additional features like grouping and rating.
+This project consists of a full-stack application for managing links, with a React front-end and a TypeScript back-end using local or Supabase Postgres database. The extension allows users to create, update, and manage links with additional features like grouping and rating.
 
 User needs to login with their google account to start using the functionalities. Also the links will be saved, and listed per user, and across all browser instances, given that user is signed in, and we set up to point to the same back end server.
 
@@ -73,12 +73,19 @@ VITE_API_BASE_URL=http://localhost:3001
 
 #### Local back-end server
 
+First, start the local Postgres DB.
+
+```bash
+cd back-end
+docker compose up -d
+```
+
+Create an `.env` file and add this database url: `DATABASE_URL=postgres://admin:password@127.0.0.1:5432/piaz` (Change to other url if you plan to use other database source)
+
 ```bash
 cd back-end
 npm run dev
 ```
-
-- For Local run like above, it will use SQLite as database.
 
 #### Local front-end chrome extension
 
@@ -116,6 +123,8 @@ Same with the above setup. We may also want to pack the extension and get user t
 - We don't want different users' links to be mixed up together, so I need to have user differentiation. For the scope of the project, I don't plan to scaffold a full scale authentication server and all of its authenticate, authorize logic, so decided to go with simple Google sign in on front end.
 - We don't want to restrict user to access the extension functionalities, and as it's just an MVP product, so I just omitted the sign up flow.
 - At this point, I only use user email as user's PII. So following KISS and YAGNI principles, just provide an additional `userEmail` column for the `Link` table, instead of spawning another table for storing user details. Then update and query links base on user email. More complex use cases should be handled later.
+- For frontend: I use simply 1 popup and 1 page for dashboard. React Query is chosen as it can be used to manage server state effectively. MUI for its ready, customizable components, also MUI provides DataGrid component which I make use for the link dashboard.
+- Google sign in implemented and user data is saved to Sync Storage so user can view their own saved selection from whichever browser/ machine (as long as it is chrome-based and signed in with their account)
 
 ## Database Setup
 
@@ -130,7 +139,7 @@ The project uses Supabase with the following schema:
   - rating
   - user_email
 
-Migrations are available in `back-end/supabase/migrations/`
+Migrations are available in `back-end/src/migration/`
 
 ## API Documentation
 
