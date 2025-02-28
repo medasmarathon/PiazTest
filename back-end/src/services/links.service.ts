@@ -6,22 +6,21 @@ import { ErrorCode, handleError } from '../utils/error';
 
 const linkRepository = AppDataSource.getRepository(LinkModel);
 
-type CreateLinkInput = typeof CreateLinkRequest._input;
-type UpdateLinkInput = typeof UpdateLinkRequest._input;
+type CreateLinkInput = typeof CreateLinkRequest._output;
+type UpdateLinkInput = typeof UpdateLinkRequest._output;
 
 export class LinksService {
 
   async createLink(createLinkRequest: CreateLinkInput, userEmail: string) {
     try {
-      const parsed = CreateLinkRequest.parse(createLinkRequest);
       const existedLink = await linkRepository.findOne({
-        where: { url: parsed.url }
+        where: { url: createLinkRequest.url }
       });
 
       return await linkRepository.save({
-        ...parsed,
+        ...createLinkRequest,
         id: existedLink ? existedLink.id : undefined,
-        created_at: parsed.created_at ? new Date(parsed.created_at).toUTCString() : new Date().toUTCString(),
+        created_at: createLinkRequest.created_at ? new Date(createLinkRequest.created_at).toUTCString() : new Date().toUTCString(),
         userEmail
       });
     } catch (error) {
@@ -40,9 +39,8 @@ export class LinksService {
         throw new Error('Unauthorized to update this link');
       }
 
-      const parsed = UpdateLinkRequest.parse(updateLinkRequest);
       return await linkRepository.save({
-        ...parsed,
+        ...updateLinkRequest,
         id,
         userEmail
       });

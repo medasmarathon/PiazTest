@@ -69,6 +69,7 @@ const Popup: React.FC = () => {
       id: linksQuery.data?.find((l) => l.url === formData.url)?.id ?? undefined,
       description: formData?.description ? formData.description.trim() : "",
       created_at: formData?.created_at ? new Date(formData.created_at as any).getTime() : Date.now(),
+      userEmail
     };
 
     const success = await saveLink.mutateAsync(newLink);

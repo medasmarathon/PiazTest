@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { LinksService } from '../services/links.service';
+import { CreateLinkRequest } from '../dto/createLinkRequest';
 
 const router = Router();
 const linksService = new LinksService();
@@ -7,7 +8,8 @@ const linksService = new LinksService();
 // Create a new link
 router.post('/', async (req, res) => {
   try {
-    const result = await linksService.createLink(req.body, req.body.userEmail);
+    const parsed = CreateLinkRequest.parse(req.body);
+    const result = await linksService.createLink(parsed, req.body.userEmail);
     res.status(201).json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -17,7 +19,8 @@ router.post('/', async (req, res) => {
 // Update a link
 router.put('/:id', async (req, res) => {
   try {
-    const result = await linksService.updateLink(req.params.id, req.body, req.body.userEmail);
+    const parsed = CreateLinkRequest.parse(req.body);
+    const result = await linksService.updateLink(req.params.id, parsed, req.body.userEmail);
     res.status(200).json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
