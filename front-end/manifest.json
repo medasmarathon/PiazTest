@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "Save and manage your favorite links",
   "permissions": ["tabs", "storage", "identity"],
-  "host_permissions": ["http://localhost:3000/*"],
+  "host_permissions": ["http://localhost:3000/*", "http://ec2-13-212-45-193.ap-southeast-1.compute.amazonaws.com/*"],
   "action": {
     "default_popup": "./src/popup/index.html",
     "default_icon": {

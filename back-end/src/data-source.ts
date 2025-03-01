@@ -1,3 +1,4 @@
+import { default as path } from 'path';
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { LinkModel } from "./model/LinkModel";
@@ -10,7 +11,7 @@ export const AppDataSource = new DataSource({
     type: "postgres",
     url: process.env.DATABASE_URL,
     logging: false,
-    entities: [LinkModel],
-    migrations: ["src/migration/*.[t|j]s"],
+    entities: [path.join(__dirname, "./model/*.[t|j]s")],
+    migrations: [path.join(__dirname, "./migration/*.[t|j]s")],
     subscribers: [],
 });
