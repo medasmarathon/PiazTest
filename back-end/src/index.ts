@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 
 AppDataSource.initialize().then(async (dataSource) => {
   await dataSource.runMigrations();
-}).catch(error => console.log(error))
+}).catch(error => console.log("Data Source error:", error))
 
 app.use(cors());
 app.use(express.json());
