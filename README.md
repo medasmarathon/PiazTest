@@ -162,3 +162,21 @@ The back-end provides the following endpoints:
 - POST /links - Create new link
 - PUT /links/:id - Update existing link
 - DELETE /links/:id - Delete link
+
+## Backend AWS deployment guide
+
+- Create an EC2 AWS instance (preferably a Linux OS one).
+- Setup instance security group with inbound and outbound rules including the PostgreSQL database server.
+- Log into EC2 instance.
+- Ensure these things are installed:
+
+  - Git: `sudo apt install git`
+  - NodeJS, NPM: `sudo apt install nodejs npm -y`
+  - Install PM2: `sudo npm i -g pm2`. This is for service management.
+
+- Clone this repository
+- Go to backend folder `cd back-end`
+- Run `npm i && npm run build`
+- Go to `dist` folder of backend and add `.env` file containing the PORT and DATABASE_URL.
+- In `dist` folder, run `pm2 start index.js`
+- Now you can monitor the backend server in terminal with `pm2 monit` or use `pm2 monitor` to watch its logs on PM2 webpage
